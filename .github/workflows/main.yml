@@ -3,10 +3,10 @@ name: Build and Release
 on:
   push:
     branches:
-      - onweaponfire_fix
+      - master
   pull_request:
     branches:
-      - onweaponfire_fix
+      - master
 
 jobs:
   build-and-package:
