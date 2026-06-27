@@ -25,6 +25,7 @@
 #include <utime.h>
 #include <sys/time.h>
 #include <filesystem>
+// #include <bzlib.h>
 
 
 /*
@@ -400,7 +401,6 @@ namespace Mod::Util::Download_Manager
 
 			pathfull += value;
 			pathfullLowercase += valueLowercase;
-
 			
 			bool customNormalCase = access(pathfull.c_str(), F_OK) == 0;
 			bool customLowerCase = access(pathfullLowercase.c_str(), F_OK) == 0;
@@ -454,10 +454,10 @@ namespace Mod::Util::Download_Manager
 						kvroot->deleteThis();
 					}
 				}
+
 				if (StringEndsWith(value.c_str(),".mdl", false)){
 					char texname[128];
 					char texdir[128];
-					
 
 					FILE *mdlFile = fopen(customNormalCase ? pathfull.c_str() : pathfullLowercase.c_str(),"r");
 					//Msg("Model %s\n",value.c_str());
@@ -1251,6 +1251,7 @@ namespace Mod::Util::Download_Manager
 	{
 		DETOUR_MEMBER_CALL(pEdictList, edictList, clientMax);
 		auto dummyFile = std::format("{}/materials/vgui/hud/linux_fix.vmt",game_path);
+		std::error_code er;
 		std::filesystem::create_directories(std::filesystem::path(dummyFile).parent_path(),er);
 		auto file = fopen(dummyFile.c_str(), "w");
 		if (file) {
