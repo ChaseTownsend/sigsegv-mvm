@@ -2026,6 +2026,17 @@ namespace Mod::Util::Download_Manager
 		static_cast<CNetChan *>(engine->GetPlayerNetInfo(player->entindex()))->RequestFile(args[1]);
 	}, &s_Mod);
 
+	ModCommandClient sig_latedl_disable("sig_latedl_disable", [](CCommandPlayer *player, const CCommand& args){
+
+		auto &info = download_infos[player->entindex()];
+		int disabled;
+
+		if (StringToIntStrict(args[1], disabled)) {
+			info.lateDlEnabled = !disabled;
+		}
+		ClientMsg(player, "Late downloads %s\n", info.lateDlEnabled ? "enabled" : "disabled");
+	}, &s_Mod);
+
 	ModCommandClient sig_latedl_debug("sig_latedl_debug", [](CCommandPlayer *player, const CCommand& args){
 
 		auto &info = download_infos[player->entindex()];
