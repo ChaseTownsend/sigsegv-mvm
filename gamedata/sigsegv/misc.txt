@@ -3217,12 +3217,27 @@
 					sym  "Msg"
 				}
 
+				"Log"
+				{
+					lib "tier0"
+					type "sym"
+					sym  "Log"
+				}
+
 				"SQVM::Call"
 				{
 					lib "vscript"
 					type "sym"
 					sym64  "_ZN4SQVM4CallER11SQObjectPtrxxS1_y"
 					sym  "_ZN4SQVM4CallER11SQObjectPtriiS1_j"
+				}
+
+				"CSquirrelVM::PrintFunc"
+				{
+					lib "vscript"
+					type "sym"
+					sym64  "_ZN11CSquirrelVM9PrintFuncEP4SQVMPKcz"
+					sym  "_ZN11CSquirrelVM9PrintFuncEP4SQVMPKcz"
 				}
 
 				"CTestScriptMgr::CheckPoint"
