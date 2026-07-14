@@ -12,7 +12,7 @@
 
 namespace Mod::Etc::Heat_Seeking_Rockets
 {
-	CBaseEntity *disallow_movetype_entity = nullptr;
+	CBaseEntity *disallow_movetype = nullptr;
 	int disallow_movetype_tick = 0;
 	CBaseObject *newRocketOwner = nullptr;
 	
@@ -28,17 +28,18 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	{
 		auto proj = reinterpret_cast<CBaseProjectile *>(this);
 		CBaseEntity *original = proj->GetOriginalLauncher();
-
 		DETOUR_MEMBER_CALL(launcher);
 
-		if (launcher == nullptr && newRocketOwner != nullptr && newRocketOwner->GetBuilder() != nullptr) 
+		if (launcher == nullptr && newRocketOwner != nullptr && newRocketOwner->GetBuilder() != nullptr) {
 			launcher = newRocketOwner->GetBuilder();
+		}
 
 		if (launcher != nullptr && original == nullptr) 
 		{
 			auto weapon = static_cast<CTFWeaponBaseGun *>(launcher->MyCombatWeaponPointer());
 			CBaseEntity *provider = weapon != nullptr ? weapon : launcher;
-			if (provider != nullptr && (weapon == nullptr || (weapon->GetOwnerEntity() != nullptr && weapon->GetOwnerEntity()->IsPlayer()))) 
+
+			if (provider != nullptr && (weapon == nullptr || weapon->GetOwnerEntity() != nullptr && weapon->GetOwnerEntity()->IsPlayer())) 
 			{
 				HomingRockets &homing = *(GetExtraProjectileData(proj)->homing = new HomingRockets());
 
@@ -52,7 +53,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 					if (proj->VPhysicsGetObject() != nullptr) {
 						proj->VPhysicsDestroyObject();
 					}
-					disallow_movetype_entity = proj;
+					disallow_movetype = proj;
 					disallow_movetype_tick = gpGlobals->tickcount;
 
 					homing.enable = true;
@@ -93,17 +94,17 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 					
 					homing.speed = weapon != nullptr ? CalculateProjectileSpeed(weapon) : 1100;
 
-					if (homing.speed < 0) 
+					if (homing.speed < 0) {
 						homing.speed = -homing.speed;
+					}
 				}
-				else
-				{
+				else {
 					homing.enable = false;
 
 					if(proj->GetMoveType() == MOVETYPE_CUSTOM)
 					{
-						// hopefully should allow us to "reset" our movetype if our homing are disabled
-						proj->SetMoveType((MoveType_t) proj->GetCustomVariableInt<"last_movetype">(), proj->GetMoveCollide());
+						// NOT THE BEST BUT WORKS
+						proj->SetMoveType(MOVETYPE_FLY, proj->GetMoveCollide());
 					}
 				}
 			}
@@ -112,11 +113,10 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
 	{
-		auto entity = reinterpret_cast<CBaseProjectile *>(this);
-		entity->SetCustomVariable("last_movetype", Variant( (int)entity->GetMoveType()));
-
-		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype_entity == entity)
+		auto entity = reinterpret_cast<CBaseEntity *>(this);
+		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype == entity) {
 			val = MOVETYPE_CUSTOM;
+		}
 
 		DETOUR_MEMBER_CALL(val, collide);
 	}
@@ -125,7 +125,6 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	{
 		//Assume all "tf_projectile" entities are projectiles, for better performance
 		auto proj = static_cast<CBaseProjectile *>(ent);
-		// float seek = 0.0f;
 		if (proj == nullptr) 
 			return false;
 
@@ -177,12 +176,9 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				CTFPlayer *target_player = nullptr;
 				ForEachTFPlayer([&](CTFPlayer *player)
 				{
-					if (!player->IsAlive())
-						return;
-					if (player->GetTeamNumber() == TEAM_SPECTATOR)
-						return;
-					if (player->GetTeamNumber() == proj->GetTeamNumber())
-						return;
+					if (!player->IsAlive())                               return;
+					if (player->GetTeamNumber() == TEAM_SPECTATOR)        return;
+					if (player->GetTeamNumber() == proj->GetTeamNumber()) return;
 					
 					if (homing.ignore_disguised_spies) 
 					{
@@ -193,8 +189,10 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 					if (homing.ignore_stealthed_spies) 
 					{
 						if (player->m_Shared->IsStealthed() && player->m_Shared->GetPercentInvisible() >= 0.75f &&
-							!player->m_Shared->InCond(TF_COND_STEALTHED_BLINK) && !player->m_Shared->InCond(TF_COND_BURNING) && !player->m_Shared->InCond(TF_COND_URINE) && !player->m_Shared->InCond(TF_COND_BLEEDING)) 
+							!player->m_Shared->InCond(TF_COND_STEALTHED_BLINK) && !player->m_Shared->InCond(TF_COND_BURNING) && !player->m_Shared->InCond(TF_COND_URINE) && !player->m_Shared->InCond(TF_COND_BLEEDING))
+						{
 							return;
+						}
 					}
 					
 					Vector delta = player->WorldSpaceCenter() - proj->WorldSpaceCenter();
@@ -209,7 +207,9 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 						bool noclip = proj->GetMoveType() == MOVETYPE_NOCLIP;
 						trace_t tr;
 						if (!noclip) 
+						{
 							UTIL_TraceLine(player->WorldSpaceCenter(), proj->WorldSpaceCenter(), MASK_SOLID_BRUSHONLY, player, COLLISION_GROUP_NONE, &tr);
+						}
 						
 						if (noclip || !tr.DidHit() || tr.m_pEnt == proj) 
 						{
@@ -234,13 +234,11 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 				homing.homed_in = true;
 				homing.homed_in_angle = angToTarget;
-				
 			}
-			else
+			else 
 				homing.homed_in = false;
 		}
-		if (homing.homed_in) 
-		{
+		if (homing.homed_in) {
 			float ticksPerSecond = 1.0f / gpGlobals->frametime;
 			pNewAngVelocity->x = (ApproachAngle(homing.homed_in_angle.x, pNewAngles->x, homing.turn_power * gpGlobals->frametime) - pNewAngles->x) * ticksPerSecond;
 			pNewAngVelocity->y = (ApproachAngle(homing.homed_in_angle.y, pNewAngles->y, homing.turn_power * gpGlobals->frametime) - pNewAngles->y) * ticksPerSecond;
@@ -266,14 +264,14 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	DETOUR_DECL_MEMBER(void, CBaseEntity_PerformCustomPhysics, Vector *pNewPosition, Vector *pNewVelocity, QAngle *pNewAngles, QAngle *pNewAngVelocity)
 	{
 		auto ent = reinterpret_cast<CBaseEntity *>(this);
-		if (!PerformCustomPhysics(ent, pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity))
+		if (!PerformCustomPhysics(ent, pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity)) 
 			return DETOUR_MEMBER_CALL(pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity);
 	}
 
 	DETOUR_DECL_MEMBER(void, CTFProjectile_Flare_PerformCustomPhysics, Vector *pNewPosition, Vector *pNewVelocity, QAngle *pNewAngles, QAngle *pNewAngVelocity)
 	{
 		auto ent = reinterpret_cast<CBaseEntity *>(this);
-		if (!PerformCustomPhysics(ent, pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity))
+		if (!PerformCustomPhysics(ent, pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity)) 
 			return DETOUR_MEMBER_CALL(pNewPosition, pNewVelocity, pNewAngles, pNewAngVelocity);
 	}
 	
