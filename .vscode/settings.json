@@ -106,5 +106,9 @@
     "terminal.integrated.copyOnSelection": true,
     "cmake.configureOnOpen": false,
     "C_Cpp.default.cppStandard": "c++23",
-    "C_Cpp.default.cStandard": "c17"
+    "C_Cpp.default.cStandard": "c17",
+    // "clangd.arguments": [
+    //     "--query-driver=/usr/bin/g++",
+    //     "--extra-arg=-I${workspaceFolder}/src"
+    // ]
 }
