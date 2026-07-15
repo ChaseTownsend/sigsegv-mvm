@@ -99,7 +99,14 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				else
 				{
 					homing.enable = false;
-					proj->SetMoveType(MOVETYPE_FLY, proj->GetMoveCollide());
+
+					if(proj->GetMoveType() == MOVETYPE_CUSTOM)
+					{
+						auto extra = GetExtraProjectileData(proj);
+						// hopefully should allow us to "reset" our movetype if our homing are disabled
+						if(extra != nullptr)
+							proj->SetMoveType(extra->prev_movetype, proj->GetMoveCollide());
+					}
 				}
 			}
 		}
@@ -107,7 +114,17 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
 	{
-		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype_entity == reinterpret_cast<CBaseEntity *>(this))
+		auto entity = reinterpret_cast<CBaseProjectile *>(this);
+		auto proj = reinterpret_cast<CBaseProjectile *>(this);
+
+		if(proj != nullptr)
+		{
+			auto extra = GetExtraProjectileData(proj)
+			if(extra != nullptr)
+				extra->prev_movetype = entity->GetMoveType();
+		}
+
+		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype_entity == entity)
 			val = MOVETYPE_CUSTOM;
 
 		DETOUR_MEMBER_CALL(val, collide);
@@ -117,7 +134,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	{
 		//Assume all "tf_projectile" entities are projectiles, for better performance
 		auto proj = static_cast<CBaseProjectile *>(ent);
-		float seek = 0.0f;
+		// float seek = 0.0f;
 		if (proj == nullptr) 
 			return false;
 

@@ -187,6 +187,7 @@ public:
         }
     }
     HomingRockets *homing = nullptr;
+    MoveType_t prev_movetype = MOVETYPE_NONE;
 };
 
 class ExtraEntityDataPlayer : public ExtraEntityDataCombatCharacter
