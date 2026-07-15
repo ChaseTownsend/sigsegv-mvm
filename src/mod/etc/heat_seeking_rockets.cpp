@@ -102,10 +102,8 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 					if(proj->GetMoveType() == MOVETYPE_CUSTOM)
 					{
-						auto extra = GetExtraProjectileData(proj);
 						// hopefully should allow us to "reset" our movetype if our homing are disabled
-						if(extra != nullptr)
-							proj->SetMoveType(extra->prev_movetype, proj->GetMoveCollide());
+						proj->SetMoveType((MoveType_t) proj->GetCustomVariableInt<"last_movetype">(), proj->GetMoveCollide());
 					}
 				}
 			}
@@ -115,14 +113,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
 	{
 		auto entity = reinterpret_cast<CBaseProjectile *>(this);
-		auto proj = reinterpret_cast<CBaseProjectile *>(this);
-
-		if(proj != nullptr)
-		{
-			auto extra = GetExtraProjectileData(proj);
-			if(extra != nullptr)
-				extra->prev_movetype = entity->GetMoveType();
-		}
+		entity->SetCustomVariable("last_movetype", Variant( (int)entity->GetMoveType()));
 
 		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype_entity == entity)
 			val = MOVETYPE_CUSTOM;
