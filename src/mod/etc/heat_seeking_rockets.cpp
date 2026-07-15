@@ -38,7 +38,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 		{
 			auto weapon = static_cast<CTFWeaponBaseGun *>(launcher->MyCombatWeaponPointer());
 			CBaseEntity *provider = weapon != nullptr ? weapon : launcher;
-			if (provider != nullptr && (weapon == nullptr || weapon->GetOwnerEntity() != nullptr && weapon->GetOwnerEntity()->IsPlayer())) 
+			if (provider != nullptr && (weapon == nullptr || (weapon->GetOwnerEntity() != nullptr && weapon->GetOwnerEntity()->IsPlayer()))) 
 			{
 				HomingRockets &homing = *(GetExtraProjectileData(proj)->homing = new HomingRockets());
 
@@ -119,7 +119,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 		if(proj != nullptr)
 		{
-			auto extra = GetExtraProjectileData(proj)
+			auto extra = GetExtraProjectileData(proj);
 			if(extra != nullptr)
 				extra->prev_movetype = entity->GetMoveType();
 		}
