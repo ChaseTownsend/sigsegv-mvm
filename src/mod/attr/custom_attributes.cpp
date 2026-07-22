@@ -4969,9 +4969,9 @@ namespace Mod::Attr::Custom_Attributes
 		DETOUR_MEMBER_CALL(other, info);
 	}
 
-	DETOUR_DECL_MEMBER(float, CTFPlayer_TeamFortress_CalculateMaxSpeed, bool flag)
+	DETOUR_DECL_MEMBER(float, CTFPlayer_TeamFortress_CalculateMaxSpeed, bool bIgnoreSpecialAbility)
 	{
-		float ret = DETOUR_MEMBER_CALL(flag);
+		float ret = DETOUR_MEMBER_CALL(bIgnoreSpecialAbility);
 
 		CTFPlayer *player = reinterpret_cast<CTFPlayer *>(this);
 		if (player->HasTheFlag())
@@ -4987,6 +4987,18 @@ namespace Mod::Attr::Custom_Attributes
 		if (speedHp != 1.0f) {
 			speedHp = RemapValClamped(player->GetHealth(), player->GetMaxHealth() * 0.15f, player->GetMaxHealth() * 0.85f, speedHp, 1.0f);
 			ret *= speedHp;
+		}
+
+		int playerclass = player->GetPlayerClass()->GetClassIndex();
+
+		if ( playerclass == TF_CLASS_DEMOMAN )
+		{
+			if ( !bIgnoreSpecialAbility && player->m_Shared->InCond( TF_COND_SHIELD_CHARGE ) )
+			{
+				float charging_mult = GetFastAttributeFloat(player, 1.0f, MULT_CHARGING_MOVE_SPEED);
+				float base_speed = tf_max_charge_speed.GetFloat();
+				ret = base_speed * charging_mult; // i aint complaining, it sets it
+			}
 		}
 
 		return ret;
