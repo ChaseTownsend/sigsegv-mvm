@@ -192,11 +192,12 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 						homing.speed = -homing.speed;
 					}
 				}
-				else
+				else {
 					homing.enable = false;
+					proj->SetMoveType(MOVETYPE_FLYGRAVITY, proj->GetMoveCollide());
+				}
 			}
 		}
-		
 	}
 
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
@@ -294,7 +295,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				
 				float target_dotproduct  = FLT_MIN;
 				CTFPlayer *target_player = nullptr;
-				ForEachTFPlayer([&](CTFPlayer *player){
+				ForEachTFPlayer([&](CTFPlayer *player) {
 					if (!player->IsAlive())                               return;
 					if (player->GetTeamNumber() == TEAM_SPECTATOR)        return;
 					if (player->GetTeamNumber() == proj->GetTeamNumber()) return;
