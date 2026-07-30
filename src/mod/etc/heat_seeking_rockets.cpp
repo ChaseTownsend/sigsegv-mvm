@@ -207,11 +207,11 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
 	{
-		auto entity = reinterpret_cast<CBaseEntity *>(this)
+		auto entity = reinterpret_cast<CBaseEntity *>(this);
 		auto projectile = reinterpret_cast<CBaseProjectile *>(this);
 		if(projectile && projectile->GetCustomVariableInt<"spawnmovetype"(-1) == -1) {
 			projectile->SetCustomVariable("spawnmovetype", Variant((int) val));
-			Msg("%s[%d] has spawned with movetype %d\n", projectile->GetClassname(), projectile->entindex(), (int)val)
+			Msg("%s[%d] has spawned with movetype %d\n", projectile->GetClassname(), projectile->entindex(), (int)val);
 		}
 		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype == entity) {
 			val = MOVETYPE_CUSTOM;
