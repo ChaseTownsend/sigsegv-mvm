@@ -198,7 +198,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				}
 				else {
 					homing.enable = false;
-					int movetype = proj->GetCustomVariableInt<"spawnmovetype">((int)MOVETYPE_FLYGRAVITY)
+					int movetype = proj->GetCustomVariableInt<"spawnmovetype">((int)MOVETYPE_FLYGRAVITY);
 					proj->SetMoveType((MoveType_t)movetype, proj->GetMoveCollide());
 				}
 			}
@@ -209,7 +209,7 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 	{
 		auto entity = reinterpret_cast<CBaseEntity *>(this);
 		auto projectile = reinterpret_cast<CBaseProjectile *>(this);
-		if(projectile && projectile->GetCustomVariableInt<"spawnmovetype"(-1) == -1) {
+		if(projectile && projectile->GetCustomVariableInt<"spawnmovetype">(-1) == -1) {
 			projectile->SetCustomVariable("spawnmovetype", Variant((int) val));
 			Msg("%s[%d] has spawned with movetype %d\n", projectile->GetClassname(), projectile->entindex(), (int)val);
 		}
