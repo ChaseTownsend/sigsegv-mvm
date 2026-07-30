@@ -143,6 +143,10 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				CALL_ATTRIB_HOOK_INT_ON_OTHER(provider, homing.return_to_sender, return_to_sender);
 				if (homing.turn_power != 0.0f || homing.acceleration != 0.0f || homing.gravity != 0.0f || homing.return_to_sender != 0) {
 
+					if(proj->GetMoveType() != MOVETYPE_CUSTOM) {
+						proj->SetCustomVariable("lastmovetype", Variant((int) proj->GetMoveType()));
+					}
+					
 					proj->SetMoveType(MOVETYPE_CUSTOM, proj->GetMoveCollide());
 					if (proj->VPhysicsGetObject() != nullptr) {
 						proj->VPhysicsDestroyObject();
@@ -194,7 +198,8 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 				}
 				else {
 					homing.enable = false;
-					proj->SetMoveType(MOVETYPE_FLYGRAVITY, proj->GetMoveCollide());
+					int movetype = proj->GetCustomVariableInt<"spawnmovetype">((int)MOVETYPE_FLYGRAVITY)
+					proj->SetMoveType((MoveType_t)movetype, proj->GetMoveCollide());
 				}
 			}
 		}
@@ -202,7 +207,13 @@ namespace Mod::Etc::Heat_Seeking_Rockets
 
 	DETOUR_DECL_MEMBER(void, CBaseEntity_SetMoveType, MoveType_t val, MoveCollide_t collide)
 	{
-		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype == reinterpret_cast<CBaseEntity *>(this)) {
+		auto entity = reinterpret_cast<CBaseEntity *>(this)
+		auto projectile = reinterpret_cast<CBaseProjectile *>(this);
+		if(projectile && projectile->GetCustomVariableInt<"spawnmovetype"(-1) == -1) {
+			projectile->SetCustomVariable("spawnmovetype", Variant((int) val));
+			Msg("%s[%d] has spawned with movetype %d\n", projectile->GetClassname(), projectile->entindex(), (int)val)
+		}
+		if (disallow_movetype_tick == gpGlobals->tickcount && disallow_movetype == entity) {
 			val = MOVETYPE_CUSTOM;
 		}
 
