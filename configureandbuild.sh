@@ -126,7 +126,7 @@ clone_alliedmodders()
         git clone https://github.com/alliedmodders/ambuild --depth 1
     fi
     if [ ! -d sourcemod/.git ]; then
-        git clone --recursive https://github.com/alliedmodders/sourcemod --depth 1 -b 1.11-dev
+        git clone --recursive https://github.com/alliedmodders/sourcemod --depth 1 -b master
     fi
     if [ ! -d hl2sdk-sdk2013/.git ]; then
         git clone https://github.com/alliedmodders/hl2sdk --depth 1 -b sdk2013 hl2sdk-sdk2013
@@ -138,7 +138,7 @@ clone_alliedmodders()
         git clone https://github.com/alliedmodders/hl2sdk --depth 1 -b css hl2sdk-css
     fi
     if [ ! -d metamod-source/.git ]; then
-        git clone https://github.com/alliedmodders/metamod-source --depth 1 -b 1.11-dev
+        git clone https://github.com/alliedmodders/metamod-source --depth 1 -b master
     fi
 }
 
