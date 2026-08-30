@@ -5837,14 +5837,7 @@ namespace Mod::Attr::Custom_Attributes
 		
 		auto weapon = reinterpret_cast<CTFWeaponBase *>(this);
 
-		bool HasPassive = GetFastAttributeInt(weapon, 0, PASSIVE_RELOAD) == 1;
-
-		if (weapon->IsEnergyWeapon() && (weapon->m_flEnergy >= Energy_GetShotCost()) && !(weapon->m_flEnergy >= Energy_GetMaxEnergy()) && HasPassive) {
-			DevMsg("Weapon (#%d %08x): Has Energy and is Not Fully Charged!, with a Max clip of %d, and Max Energy of %f\n",
-				weapon->entindex(), (uintptr_t)weapon, weapon->GetMaxClip1(), weapon->Energy_GetMaxEnergy());
-		}
-
-		if (weapon->GetMaxClip1() != -1 && GetFastAttributeInt(weapon, 0, PASSIVE_RELOAD) != 0) {
+		if ((weapon->GetMaxClip1() != -1) || (weapon->IsEnergyWeapon() && weapon->m_flEnergy < weapon->Energy_GetMaxEnergy()) && GetFastAttributeInt(weapon, 0, PASSIVE_RELOAD) != 0) {
 			weapon->CheckReload();
 		}
 	}
