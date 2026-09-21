@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include "smsdk_ext.h"
 #include <am-string.h>
+#include <version.h>
 
 /**
  * @file smsdk_ext.cpp

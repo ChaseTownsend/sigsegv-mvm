@@ -40,12 +40,12 @@
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"sigsegv MvM"
 #define SMEXT_CONF_DESCRIPTION	"sigsegv's Mann vs Machine mods"
-#define SMEXT_CONF_VERSION		__DATE__
+#define SMEXT_CONF_VERSION		GetBuildDate()
 #define SMEXT_CONF_AUTHOR		"sigsegv"
 #define SMEXT_CONF_URL			"http://sigpipe.info/"
 #define SMEXT_CONF_LOGTAG		"SIGSEGV"
 #define SMEXT_CONF_LICENSE		"Simplified BSD"
-#define SMEXT_CONF_DATESTRING	__DATE__
+#define SMEXT_CONF_DATESTRING	GetBuildDate()
 
 /** 
  * @brief Exposes plugin's main interface.
