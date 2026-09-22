@@ -49,6 +49,7 @@ public:
 	void CheckReload()                                     {        vt_CheckReload (this); }
 	Activity ActivityOverride(Activity base, bool *required){return vt_ActivityOverride (this, base, required); }
 	void Lower()                                           {        vt_Lower(this); }
+	void FinishReload()                                    {        vt_FinishReload(this); }
 	
 	
 	DECL_SENDPROP(float, m_flNextPrimaryAttack);
@@ -106,6 +107,7 @@ private:
 	static MemberVFuncThunk<      CBaseCombatWeapon *, void>                         vt_CheckReload;
 	static MemberVFuncThunk<      CBaseCombatWeapon *, Activity, Activity, bool *>   vt_ActivityOverride;
 	static MemberVFuncThunk<      CBaseCombatWeapon *, void>                         vt_Lower;
+	static MemberVFuncThunk<	  CBaseCombatWeapon *, void> 						 vt_FinishReload;
 	
 };
 
