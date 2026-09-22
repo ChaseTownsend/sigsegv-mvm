@@ -48,7 +48,6 @@ public:
 	int GetSkin()                            { return vt_GetSkin(this); }
 	void WeaponReset()                       {        vt_WeaponReset(this); }
 	void Reload()                            {        vt_Reload(this); }
-	void FinishReload()                      {        vt_FinishReload(this); }
 
 	
 	int Clip1()                              { return IsEnergyWeapon() ? m_flEnergy : m_iClip1; }
@@ -98,7 +97,6 @@ private:
 	static MemberVFuncThunk<CTFWeaponBase *, int> vt_GetSkin;
 	static MemberVFuncThunk<CTFWeaponBase *, void> vt_WeaponReset;
 	static MemberVFuncThunk<CTFWeaponBase *, void> vt_Reload;
-	static MemberVFuncThunk<CTFWeaponBase *, void> vt_FinishReload;
 };
 
 class CTFWeaponBaseGun : public CTFWeaponBase {
